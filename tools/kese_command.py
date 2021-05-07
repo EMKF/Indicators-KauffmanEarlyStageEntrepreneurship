@@ -1,0 +1,419 @@
+import os
+import sys
+import shutil
+import joblib
+import numpy as np
+import pandas as pd
+import constants as c
+import get_pop_data as p  # todo: it doesn't look like this is used below
+from kauffman.data import pep, bed
+
+
+def _format_csv(df):
+    return df. \
+        astype({'fips': 'str', 'time': 'int'})
+
+def rne(df):
+    """Calculate the Rate of New Entrepreneurs for a given region and year."""
+    return (df['ent015ua'] * df['wgtat1']).sum() / df['wgtat1'].sum()
+
+def ose(df):
+    """Calculate the Opportunity Share of Entrepreneurs for a given region and year."""
+    return (df['oppshare'] * df['wgtat1']).sum() / df['wgtat1'].sum()
+
+def _preprocess_cps(df, region):
+    """
+    Pre-processes CPS data. Generate indicators and aggregate it to the annual level, broken down by
+    category.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Raw CPS data
+
+    region : str
+        Geographical level of data to be fetched. Options: 'us' or 'state'
+
+    Returns
+    -------
+    DataFrame
+        The processed data
+    """
+    df.query('yeart1 == yeart1', inplace=True)
+    print('\tPre-processing data for', region, df['yeart1'].unique())
+
+    if region == 'state':
+        df_rne = df \
+            [~df.ent015ua.isna()].\
+            groupby(['yeart1', 'state']).apply(rne).\
+            reset_index(name='rne')\
+            [['yeart1', 'state', 'rne']]
+
+        df_ose = df \
+            [~df.oppshare.isna()].\
+            groupby(['yeart1', 'state']).apply(ose).\
+            reset_index(name='ose')\
+            [['yeart1', 'state', 'ose']]
+
+        df_processed = df_rne.\
+            merge(df_ose).\
+            assign(
+                category='Total',
+                type='Total',
+                fips=lambda x: x.state.map(c.cps_to_fips),
+                region=lambda x: x['fips'].map(c.state_fips_abb_dic).map(c.abbrev_us_state)
+            ).\
+            drop('state', 1)
+
+    else:
+        df_processed = pd.DataFrame()
+        for type_c in c.kese_categories:
+            for cat in c.kese_categories[type_c]:
+                df_rne = df \
+                    [~df.ent015ua.isna()].\
+                    query(c.kese_category_queries[cat]).\
+                    groupby('yeart1').apply(rne).\
+                    reset_index(name='rne') \
+                    [['yeart1', 'rne']]
+
+                df_ose = df \
+                    [~df.oppshare.isna()].\
+                    query(c.kese_category_queries[cat]).\
+                    groupby('yeart1').apply(ose).\
+                    reset_index(name='ose') \
+                    [['yeart1', 'ose']]
+
+                df_processed = df_processed.\
+                    append(
+                        df_rne.\
+                            merge(df_ose).\
+                            assign(
+                                type=type_c,
+                                category=cat,
+                                fips='00'
+                            )
+                    ).\
+                    assign(region='United States')
+
+    return df_processed. \
+        rename(columns={'yeart1': 'time'}).\
+        astype({'time': 'int'}) \
+        [['fips', 'region', 'type', 'category', 'time', 'rne', 'ose']]
+
+
+def _fetch_data_cps():
+    """
+    Fetch CPS data from https://people.ucsc.edu/~rfairlie/data/microdata/. Pre-process the data.
+
+    Parameters
+    ----------
+    region : str
+        Geographical level of data to be fetched. Options: 'us' or 'state'
+    """
+    print('Fetching CPS data')
+
+    df_us = pd.DataFrame()
+    df_state = pd.DataFrame()
+    for year in [y - 1900 if y < 2000 else str(y - 2000).zfill(2) for y in range(1996, 2021)]:
+        df_in = pd.read_csv(f'https://people.ucsc.edu/~rfairlie/data/microdata/kieadata{year}.csv')
+
+        df_us = df_us.append(_preprocess_cps(df_in, 'us'))
+        df_state = df_state.append(_preprocess_cps(df_in, 'state'))
+
+    joblib.dump(
+        df_us.reset_index(drop=True),
+        c.filenamer(f'data/temp/cps_us.pkl')
+    )
+    joblib.dump(
+        df_state.reset_index(drop=True),
+        c.filenamer(f'data/temp/cps_state.pkl')
+    )
+
+
+def _fetch_data_bed(region, fetch_data):
+    """
+    Fetch raw BED data. Data comes from two tables: table 1bf and 7.
+
+    Parameters
+    ----------
+    region : str
+        Geographical level of data to be fetched. Options: 'us' or 'state'
+    """
+    if fetch_data:
+        print(f'\tcreating datasets neb/data/temp/bed_table1_{region}.pkl and neb/data/temp/bed_table7_{region}.pkl')
+        df_t1 = bed(series='establishment age and survival', table='1bf', obs_level=region)
+
+        df_t7 = bed(series='establishment age and survival', table=7, obs_level=region). \
+            rename(columns={'age': 'firm_age'}). \
+            assign(Lestablishments=lambda x: x['establishments'].shift(1))
+
+    # else:
+    #     df_t1 = pd.read_csv(c.filenamer(f'data/raw_data/bed_table1_{region}.csv'))
+    #     df_t7 = pd.read_csv(c.filenamer(f'data/raw_data/bed_table7_{region}.csv'))
+
+    joblib.dump(df_t1, c.filenamer(f'data/temp/bed_table1_{region}.pkl'))
+    joblib.dump(df_t7, c.filenamer(f'data/temp/bed_table7_{region}.pkl'))
+
+
+def _fetch_data_pep(region, fetch_data):
+    """
+    Fetch raw PEP data.
+
+    Parameters
+    ----------
+    region : str
+        Geographical level of data to be fetched. Options: 'us' or 'state'
+    """
+    if fetch_data:
+        print(f'\tcreating dataset neb/data/temp/pep_{region}.pkl')
+        df = pep(region).\
+            rename(columns={'POP': 'population'}).\
+            astype({'time': 'int', 'population': 'int'}).\
+            query('time >= 2000').\
+            append(p.fetch_data(region)).\
+            sort_values(['fips', 'region', 'time']).\
+            reset_index(drop=True)
+    # else:
+    #     df = pd.read_csv(c.filenamer(f'data/raw_data/pep_{region}.csv')). \
+    #         pipe(_format_csv)
+
+
+    joblib.dump(df, c.filenamer(f'data/temp/pep_{region}.pkl'))
+
+
+def _raw_data_fetch(fetch_data):
+    """
+    Fetch raw CPS, BED, and PEP data.
+
+    Parameters
+    ----------
+    fetch_data : bool
+        Specifies whether to fetch the data. Allows users to skip raw-data-fetch step if the files
+        are already present.
+    """
+
+    if os.path.isdir(c.filenamer('data/temp')):
+        _raw_data_remove(remove_data=True)
+    os.mkdir(c.filenamer('data/temp'))
+
+    _fetch_data_cps()
+    for region in ['us', 'state']:
+        _fetch_data_bed(region, fetch_data)
+        _fetch_data_pep(region, fetch_data)
+
+
+def _raw_data_merge(region):
+    """
+    Merge CPS, BED, and PEP data for a given geographical level.
+
+    Parameters
+    ----------
+    region : str
+        Geographical level of the data. Options: 'us' or 'state'
+
+    Returns
+    -------
+    DataFrame
+        The merged raw data
+    """
+
+    # Prep CPS data
+    df_cps = joblib.load(c.filenamer(f'data/temp/cps_{region}.pkl'))
+
+    # Prep BED data
+    df_bed1 = joblib.load(c.filenamer(f'data/temp/bed_table1_{region}.pkl')) \
+        [['fips', 'time', 'opening_job_gains']]
+
+    df_bed7 = joblib.load(c.filenamer(f'data/temp/bed_table7_{region}.pkl')). \
+        query('firm_age == 1') \
+        [['fips', 'end_year', 'establishments', 'Lestablishments']].\
+        rename(columns={'end_year': 'time'})
+
+    # Prep PEP data
+    df_pop = joblib.load(c.filenamer(f'data/temp/pep_{region}.pkl')) \
+        [['fips', 'time', 'population']]
+
+    return df_cps.\
+        merge(df_bed1, how='left', on=['time', 'fips']).\
+        merge(df_bed7, how='left', on=['time', 'fips']).\
+        merge(df_pop, how='left', on=['time', 'fips'])
+
+
+def _index_create(df, region):
+    """
+    Generate the Kauffman index.
+
+    Parameters
+    ----------
+    df : DataFrame
+        The indicators data
+
+    region : str
+        Geographical level of data. Options: 'us' or 'state'
+
+    Returns
+    -------
+    DataFrame
+        The original data plus the new index variable
+    """
+    if region == 'us':
+        # Generate the means and standard deviations of the US-level data indicators
+        df_us = df.query('1996 <= time <= 2015 and category == "Total"')
+        us_means = df_us[['rne', 'ose', 'sjc', 'ssr']].mean()
+        us_std = df_us[['rne', 'ose', 'sjc', 'ssr']].std()
+
+        # Save this information to the temp folder for future use by the state-level index creation
+        joblib.dump(us_means, c.filenamer('data/temp/us_means.pkl'))
+        joblib.dump(us_std, c.filenamer('data/temp/us_std.pkl'))
+
+    elif region == 'state':
+        us_means = joblib.load(c.filenamer('data/temp/us_means.pkl'))
+        us_std = joblib.load(c.filenamer('data/temp/us_std.pkl'))
+    
+    return df.\
+        assign(
+            ose_z = lambda x: (x['ose'] - us_means['ose']) / us_std['ose'],
+            rne_z = lambda x: (x['rne'] - us_means['rne']) / us_std['rne'],
+            sjc_z = lambda x: (x['sjc'] - us_means['sjc']) / us_std['sjc'],
+            ssr_z = lambda x: (x['ssr'] - us_means['ssr']) / us_std['ssr'],
+            zindex = lambda x: ((x['ose_z'] + x['rne_z'] + x['sjc_z'] + x['ssr_z']) / 4) * 2
+        ).\
+        drop(columns=['ose_z', 'rne_z', 'sjc_z', 'ssr_z'])
+
+
+def _indicators_create(df, region):
+    """
+    Calculate the remaining Kauffman indicators and the index.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Raw merged data
+
+    region : str
+        Geographical level of data. Options: 'us' or 'state'
+
+    Returns
+    -------
+    DataFrame
+        Indicators data
+    """
+
+    # 3 year trailing average of certains subsets of the data (RNE and OSE for state-level, OSE for
+    # non-total US-level)
+    if region == 'state':
+        df[['rne', 'ose']] = df.groupby(['fips'])[['rne', 'ose']].\
+            transform(lambda x: x.rolling(window=3).mean())
+    else:   
+        df.loc[df.category != 'Total', 'ose'] = df[df.category != 'Total'].\
+            groupby(['fips', 'category'])['ose'].\
+            transform(lambda x: x.rolling(window=3).mean())
+
+    # Generate Startup Early Job Creation (SJC) and Startup Early Survival Rate (SSR)
+    df['sjc'] = df['opening_job_gains'] / (df['population'] / 1000)
+    df['ssr'] = df['establishments'] / df['Lestablishments']
+
+    # Remove SJC and SSR for non-total categories
+    df.loc[df.category != 'Total', ['sjc', 'ssr']] = np.NaN
+
+    # Create index variable
+    df = _index_create(df, region)
+
+    return df
+
+
+def _final_data_transform(df):
+    """Format the KESE data for download."""
+    return df.\
+        rename(columns={'region': 'name', 'time': 'year'}).\
+        sort_values(['fips', 'year', 'category']).\
+        reset_index(drop=True) \
+        [['fips', 'name', 'type', 'category', 'year', 'rne', 'ose', 'sjc', 'ssr', 'zindex']]
+
+
+def _region_all_pipeline(region):
+    """Transform raw KESE data to final format. Return dataframe of transformed data."""
+    return _raw_data_merge(region).\
+            pipe(_indicators_create, region).\
+            pipe(_final_data_transform)
+
+
+def _download_csv_save(df):
+    """Save download-version of data to a csv."""
+    df.to_csv(c.filenamer('data/kese_download.csv'), index=False)
+    return df
+
+
+def _download_to_alley_formatter(df, outcome):
+    """
+    Format data of a given outcome to be suitable for upload to the Kauffman website.
+
+    Parameters
+    ----------
+    df : DataFrame
+        The data to be formatted
+
+    outcome : str
+        The column name of the outcome whose values become the cells of the dataframe
+
+    Returns
+    -------
+    DataFrame
+        Formatted data
+    """
+
+    return df[['fips', 'year', 'type', 'category'] + [outcome]].\
+        pipe(pd.pivot_table, index=['fips', 'type', 'category'], columns='year', values=outcome).\
+        reset_index().\
+        replace('Total', '').\
+        rename(columns={'type': 'demographic-type', 'category': 'demographic', 'fips': 'region'})
+
+
+def _website_csvs_save(df):
+    """Format and save csv of data to be uploaded to the website."""
+    for indicator in ['rne', 'ose', 'sjc', 'ssr', 'zindex']:
+        df.\
+            pipe(_download_to_alley_formatter, indicator). \
+            to_csv(c.filenamer(f'data/kese_website_{indicator}.csv'), index=False)
+
+
+def _raw_data_remove(remove_data=True):
+    """If remove_data set to "True", remove TEMP files."""
+    if remove_data:
+        shutil.rmtree(c.filenamer('data/temp'))  # remove unwanted files
+
+
+def kese_data_create_all(raw_data_fetch, raw_data_remove):
+    """
+    Create and save KESE data. This is the main function of kese_command.py. 
+
+    Transform raw KESE data and save it to two csv's: One for user download, and one formatted for
+    upload to the Kauffman site.
+
+    Parameters
+    ----------
+    raw_data_fetch : bool
+        Specifies whether to fetch the data. Allows users to skip raw-data-fetch step if the files
+        are already present from a previous run.
+
+    raw_data_remove : bool
+        Specifies whether to delete TEMP data at the end.
+    """
+    # _raw_data_fetch(raw_data_fetch)
+
+    pd.concat(
+        [
+            _region_all_pipeline(region) for region in ['us', 'state']
+        ],
+        axis=0
+    ).\
+        pipe(_download_csv_save).\
+        pipe(_website_csvs_save)
+
+    # _raw_data_remove(raw_data_remove)
+
+
+if __name__ == '__main__':
+    kese_data_create_all(raw_data_fetch=True, raw_data_remove=False)
+
+# todo: yeah, make these into a csv
