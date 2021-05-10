@@ -4,8 +4,8 @@ import shutil
 import joblib
 import numpy as np
 import pandas as pd
-import constants as c
-import get_pop_data as p  # todo: it doesn't look like this is used below
+import tools.constants as c
+import tools.kese_helpers as h
 from kauffman.data import pep, bed
 
 
@@ -13,95 +13,8 @@ def _format_csv(df):
     return df. \
         astype({'fips': 'str', 'time': 'int'})
 
-def rne(df):
-    """Calculate the Rate of New Entrepreneurs for a given region and year."""
-    return (df['ent015ua'] * df['wgtat1']).sum() / df['wgtat1'].sum()
 
-def ose(df):
-    """Calculate the Opportunity Share of Entrepreneurs for a given region and year."""
-    return (df['oppshare'] * df['wgtat1']).sum() / df['wgtat1'].sum()
-
-def _preprocess_cps(df, region):
-    """
-    Pre-processes CPS data. Generate indicators and aggregate it to the annual level, broken down by
-    category.
-
-    Parameters
-    ----------
-    df : DataFrame
-        Raw CPS data
-
-    region : str
-        Geographical level of data to be fetched. Options: 'us' or 'state'
-
-    Returns
-    -------
-    DataFrame
-        The processed data
-    """
-    df.query('yeart1 == yeart1', inplace=True)
-    print('\tPre-processing data for', region, df['yeart1'].unique())
-
-    if region == 'state':
-        df_rne = df \
-            [~df.ent015ua.isna()].\
-            groupby(['yeart1', 'state']).apply(rne).\
-            reset_index(name='rne')\
-            [['yeart1', 'state', 'rne']]
-
-        df_ose = df \
-            [~df.oppshare.isna()].\
-            groupby(['yeart1', 'state']).apply(ose).\
-            reset_index(name='ose')\
-            [['yeart1', 'state', 'ose']]
-
-        df_processed = df_rne.\
-            merge(df_ose).\
-            assign(
-                category='Total',
-                type='Total',
-                fips=lambda x: x.state.map(c.cps_to_fips),
-                region=lambda x: x['fips'].map(c.state_fips_abb_dic).map(c.abbrev_us_state)
-            ).\
-            drop('state', 1)
-
-    else:
-        df_processed = pd.DataFrame()
-        for type_c in c.kese_categories:
-            for cat in c.kese_categories[type_c]:
-                df_rne = df \
-                    [~df.ent015ua.isna()].\
-                    query(c.kese_category_queries[cat]).\
-                    groupby('yeart1').apply(rne).\
-                    reset_index(name='rne') \
-                    [['yeart1', 'rne']]
-
-                df_ose = df \
-                    [~df.oppshare.isna()].\
-                    query(c.kese_category_queries[cat]).\
-                    groupby('yeart1').apply(ose).\
-                    reset_index(name='ose') \
-                    [['yeart1', 'ose']]
-
-                df_processed = df_processed.\
-                    append(
-                        df_rne.\
-                            merge(df_ose).\
-                            assign(
-                                type=type_c,
-                                category=cat,
-                                fips='00'
-                            )
-                    ).\
-                    assign(region='United States')
-
-    return df_processed. \
-        rename(columns={'yeart1': 'time'}).\
-        astype({'time': 'int'}) \
-        [['fips', 'region', 'type', 'category', 'time', 'rne', 'ose']]
-
-
-def _fetch_data_cps():
+def _fetch_data_cps(fetch_data):
     """
     Fetch CPS data from https://people.ucsc.edu/~rfairlie/data/microdata/. Pre-process the data.
 
@@ -112,22 +25,20 @@ def _fetch_data_cps():
     """
     print('Fetching CPS data')
 
-    df_us = pd.DataFrame()
-    df_state = pd.DataFrame()
-    for year in [y - 1900 if y < 2000 else str(y - 2000).zfill(2) for y in range(1996, 2021)]:
-        df_in = pd.read_csv(f'https://people.ucsc.edu/~rfairlie/data/microdata/kieadata{year}.csv')
+    if fetch_data:
+        df_us = pd.DataFrame()
+        df_state = pd.DataFrame()
+        for year in [y - 1900 if y < 2000 else str(y - 2000).zfill(2) for y in range(1996, 2021)]:
+            df_in = pd.read_csv(f'https://people.ucsc.edu/~rfairlie/data/microdata/kieadata{year}.csv')
 
-        df_us = df_us.append(_preprocess_cps(df_in, 'us'))
-        df_state = df_state.append(_preprocess_cps(df_in, 'state'))
+            df_us = df_us.append(h.preprocess_cps(df_in, 'us'))
+            df_state = df_state.append(h.preprocess_cps(df_in, 'state'))
+    else:
+        df_us = pd.read_csv(c.filenamer(f'data/raw_data/cps_us.csv')).pipe(_format_csv)
+        df_state = pd.read_csv(c.filenamer(f'data/raw_data/cps_state.csv')).pipe(_format_csv)
 
-    joblib.dump(
-        df_us.reset_index(drop=True),
-        c.filenamer(f'data/temp/cps_us.pkl')
-    )
-    joblib.dump(
-        df_state.reset_index(drop=True),
-        c.filenamer(f'data/temp/cps_state.pkl')
-    )
+    joblib.dump(df_us, c.filenamer(f'data/temp/cps_us.pkl'))
+    joblib.dump(df_state, c.filenamer(f'data/temp/cps_state.pkl'))
 
 
 def _fetch_data_bed(region, fetch_data):
@@ -146,10 +57,9 @@ def _fetch_data_bed(region, fetch_data):
         df_t7 = bed(series='establishment age and survival', table=7, obs_level=region). \
             rename(columns={'age': 'firm_age'}). \
             assign(Lestablishments=lambda x: x['establishments'].shift(1))
-
-    # else:
-    #     df_t1 = pd.read_csv(c.filenamer(f'data/raw_data/bed_table1_{region}.csv'))
-    #     df_t7 = pd.read_csv(c.filenamer(f'data/raw_data/bed_table7_{region}.csv'))
+    else:
+        df_t1 = pd.read_csv(c.filenamer(f'data/raw_data/bed_table1_{region}.csv')).pipe(_format_csv)
+        df_t7 = pd.read_csv(c.filenamer(f'data/raw_data/bed_table7_{region}.csv')).pipe(_format_csv)
 
     joblib.dump(df_t1, c.filenamer(f'data/temp/bed_table1_{region}.pkl'))
     joblib.dump(df_t7, c.filenamer(f'data/temp/bed_table7_{region}.pkl'))
@@ -170,13 +80,12 @@ def _fetch_data_pep(region, fetch_data):
             rename(columns={'POP': 'population'}).\
             astype({'time': 'int', 'population': 'int'}).\
             query('time >= 2000').\
-            append(p.fetch_data(region)).\
+            append(h.pep_pre_2000(region)).\
+            append(h.pep_2020(region)).\
             sort_values(['fips', 'region', 'time']).\
             reset_index(drop=True)
-    # else:
-    #     df = pd.read_csv(c.filenamer(f'data/raw_data/pep_{region}.csv')). \
-    #         pipe(_format_csv)
-
+    else:
+        df = pd.read_csv(c.filenamer(f'data/raw_data/pep_{region}.csv')).pipe(_format_csv)
 
     joblib.dump(df, c.filenamer(f'data/temp/pep_{region}.pkl'))
 
@@ -196,7 +105,7 @@ def _raw_data_fetch(fetch_data):
         _raw_data_remove(remove_data=True)
     os.mkdir(c.filenamer('data/temp'))
 
-    _fetch_data_cps()
+    _fetch_data_cps(fetch_data)
     for region in ['us', 'state']:
         _fetch_data_bed(region, fetch_data)
         _fetch_data_pep(region, fetch_data)
@@ -399,7 +308,7 @@ def kese_data_create_all(raw_data_fetch, raw_data_remove):
     raw_data_remove : bool
         Specifies whether to delete TEMP data at the end.
     """
-    # _raw_data_fetch(raw_data_fetch)
+    _raw_data_fetch(raw_data_fetch)
 
     pd.concat(
         [
@@ -410,10 +319,8 @@ def kese_data_create_all(raw_data_fetch, raw_data_remove):
         pipe(_download_csv_save).\
         pipe(_website_csvs_save)
 
-    # _raw_data_remove(raw_data_remove)
+    _raw_data_remove(raw_data_remove)
 
 
 if __name__ == '__main__':
     kese_data_create_all(raw_data_fetch=True, raw_data_remove=False)
-
-# todo: yeah, make these into a csv
