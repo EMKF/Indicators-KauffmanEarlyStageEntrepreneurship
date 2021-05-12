@@ -247,9 +247,11 @@ def _region_all_pipeline(region):
             pipe(_final_data_transform)
 
 
-def _download_csv_save(df):
+def _download_csv_save(df, aws_filepath):
     """Save download-version of data to a csv."""
     df.to_csv(c.filenamer('data/kese_download.csv'), index=False)
+    if aws_filepath:
+        df.to_csv(f'{aws_filepath}/kese_download.csv', index=False)
     return df
 
 
@@ -278,12 +280,14 @@ def _download_to_alley_formatter(df, outcome):
         rename(columns={'type': 'demographic-type', 'category': 'demographic', 'fips': 'region'})
 
 
-def _website_csvs_save(df):
+def _website_csvs_save(df, aws_filepath):
     """Format and save csv of data to be uploaded to the website."""
     for indicator in ['rne', 'ose', 'sjc', 'ssr', 'zindex']:
-        df.\
-            pipe(_download_to_alley_formatter, indicator). \
-            to_csv(c.filenamer(f'data/kese_website_{indicator}.csv'), index=False)
+        df_out = df.pipe(_download_to_alley_formatter, indicator)
+
+        df_out.to_csv(c.filenamer(f'data/kese_website_{indicator}.csv'), index=False)
+        if aws_filepath:
+            df_out.to_csv(f'{aws_filepath}/kese_website_{indicator}.csv', index=False)
 
 
 def _raw_data_remove(remove_data=True):
@@ -292,7 +296,7 @@ def _raw_data_remove(remove_data=True):
         shutil.rmtree(c.filenamer('data/temp'))  # remove unwanted files
 
 
-def kese_data_create_all(raw_data_fetch, raw_data_remove):
+def kese_data_create_all(raw_data_fetch, raw_data_remove, aws_filepath=None):
     """
     Create and save KESE data. This is the main function of kese_command.py. 
 
@@ -316,11 +320,15 @@ def kese_data_create_all(raw_data_fetch, raw_data_remove):
         ],
         axis=0
     ).\
-        pipe(_download_csv_save).\
-        pipe(_website_csvs_save)
+        pipe(_download_csv_save, aws_filepath).\
+        pipe(_website_csvs_save, aws_filepath)
 
     _raw_data_remove(raw_data_remove)
 
 
 if __name__ == '__main__':
-    kese_data_create_all(raw_data_fetch=False, raw_data_remove=False)
+    kese_data_create_all(
+        raw_data_fetch=False,
+        raw_data_remove=False,
+        aws_filepath='s3://emkf.data.research/indicators/kese/data_outputs/'
+    )
