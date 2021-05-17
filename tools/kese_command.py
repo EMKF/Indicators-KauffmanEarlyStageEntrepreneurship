@@ -49,6 +49,9 @@ def _fetch_data_bed(region, fetch_data):
     ----------
     region : str
         Geographical level of data to be fetched. Options: 'us' or 'state'
+
+    fetch_data : bool
+        When true, code fetches the raw data from source; otherwise, it uses the data in data/raw_data.
     """
     if fetch_data:
         print(f'\tcreating datasets neb/data/temp/bed_table1_{region}.pkl and neb/data/temp/bed_table7_{region}.pkl')
@@ -73,6 +76,9 @@ def _fetch_data_pep(region, fetch_data):
     ----------
     region : str
         Geographical level of data to be fetched. Options: 'us' or 'state'
+
+    fetch_data : bool
+        When true, code fetches the raw data from source; otherwise, it uses the data in data/raw_data.
     """
     if fetch_data:
         print(f'\tcreating dataset neb/data/temp/pep_{region}.pkl')
@@ -97,8 +103,7 @@ def _raw_data_fetch(fetch_data):
     Parameters
     ----------
     fetch_data : bool
-        Specifies whether to fetch the data. Allows users to skip raw-data-fetch step if the files
-        are already present.
+        When true, code fetches the raw data from source; otherwise, it uses the data in data/raw_data.
     """
 
     if os.path.isdir(c.filenamer('data/temp')):
@@ -306,11 +311,13 @@ def kese_data_create_all(raw_data_fetch, raw_data_remove, aws_filepath=None):
     Parameters
     ----------
     raw_data_fetch : bool
-        Specifies whether to fetch the data. Allows users to skip raw-data-fetch step if the files
-        are already present from a previous run.
+        When true, code fetches the raw data from source; otherwise, it uses the data in data/raw_data.
 
     raw_data_remove : bool
         Specifies whether to delete TEMP data at the end.
+
+    aws_filepath : str
+        If present, the AWS filepath at which to stash the data.
     """
     _raw_data_fetch(raw_data_fetch)
 
