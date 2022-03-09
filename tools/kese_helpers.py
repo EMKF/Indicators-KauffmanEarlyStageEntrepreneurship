@@ -125,7 +125,7 @@ def pep_2020(region):
             [['fips', 'region', 'time', 'population']]
     else:
         return pd.read_excel('https://www2.census.gov/programs-surveys/popest/tables/2010-2020/state/totals/nst-est2020.xlsx', skiprows=3, skipfooter=5).\
-            rename(columns={'Unnamed: 0': 'region', 2020: 'population'}) \
+            rename(columns={'Unnamed: 0': 'region', 'July 1': 'population'}) \
             [['region', 'population']].\
             query('region not in ["Northeast", "Midwest", "South", "West", "United States"]').\
             dropna().\
@@ -133,5 +133,31 @@ def pep_2020(region):
                 region=lambda x: x.region.apply(lambda x: x.strip('.')),
                 fips=lambda x: x.region.map(c.us_state_abbrev).map(c.state_abb_fips_dic),
                 time=2020
+            ) \
+            [['fips', 'region', 'time', 'population']]
+
+def pep_2021(region):
+    """Fetch population data for 2021."""
+    if region == 'us':
+        return pd.read_excel('https://www2.census.gov/programs-surveys/popest/tables/2020-2021/national/totals/NA-EST2021-POP.xlsx', skiprows=2, usecols=['Year and Month', 'Resident Population']).\
+            iloc[11:23, :].\
+            rename(columns={'Year and Month':'time', 'Resident Population': 'population'}).\
+            query('time == ".July 1"').\
+            assign(
+                time=2021,
+                fips='00',
+                region='United States'
+            ) \
+            [['fips', 'region', 'time', 'population']]
+    else:
+        return pd.read_excel('https://www2.census.gov/programs-surveys/popest/tables/2020-2021/state/totals/NST-EST2021-POP.xlsx', skiprows=3, skipfooter=5).\
+            rename(columns={'Unnamed: 0': 'region', 2021: 'population'}) \
+            [['region', 'population']].\
+            query('region not in ["Northeast", "Midwest", "South", "West", "United States"]').\
+            dropna().\
+            assign(
+                region=lambda x: x.region.apply(lambda x: x.strip('.')),
+                fips=lambda x: x.region.map(c.us_state_abbrev).map(c.state_abb_fips_dic),
+                time=2021
             ) \
             [['fips', 'region', 'time', 'population']]

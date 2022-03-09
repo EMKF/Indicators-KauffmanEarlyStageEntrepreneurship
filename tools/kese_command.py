@@ -28,7 +28,7 @@ def _fetch_data_cps(fetch_data):
     if fetch_data:
         df_us = pd.DataFrame()
         df_state = pd.DataFrame()
-        for year in [y - 1900 if y < 2000 else str(y - 2000).zfill(2) for y in range(1996, 2021)]:
+        for year in [y - 1900 if y < 2000 else str(y - 2000).zfill(2) for y in range(1996, 2022)]:
             df_in = pd.read_csv(f'https://people.ucsc.edu/~rfairlie/data/microdata/kieadata{year}.csv')
 
             df_us = df_us.append(h.preprocess_cps(df_in, 'us'))
@@ -87,7 +87,6 @@ def _fetch_data_pep(region, fetch_data):
             astype({'time': 'int', 'population': 'int'}).\
             query('time >= 2000').\
             append(h.pep_pre_2000(region)).\
-            append(h.pep_2020(region)).\
             sort_values(['fips', 'region', 'time']).\
             reset_index(drop=True)
     else:
@@ -287,6 +286,7 @@ def _download_to_alley_formatter(df, outcome):
 
 def _website_csvs_save(df, aws_filepath):
     """Format and save csv of data to be uploaded to the website."""
+    print(df.head())
     for indicator in ['rne', 'ose', 'sjc', 'ssr', 'zindex']:
         df_out = df.pipe(_download_to_alley_formatter, indicator)
 
@@ -335,7 +335,7 @@ def kese_data_create_all(raw_data_fetch, raw_data_remove, aws_filepath=None):
 
 if __name__ == '__main__':
     kese_data_create_all(
-        raw_data_fetch=False,
-        raw_data_remove=False,
+        raw_data_fetch=True,
+        raw_data_remove=True,
         aws_filepath='s3://emkf.data.research/indicators/kese/data_outputs/'
     )

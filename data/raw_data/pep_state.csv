@@ -24,6 +24,7 @@ fips,region,time,population
 01,Alabama,2018,4887681.0
 01,Alabama,2019,4903185.0
 01,Alabama,2020,4921532.0
+01,Alabama,2021,5039877.0
 02,Alaska,1996,608569.0
 02,Alaska,1997,612968.0
 02,Alaska,1998,619932.0
@@ -49,6 +50,7 @@ fips,region,time,population
 02,Alaska,2018,735139.0
 02,Alaska,2019,731545.0
 02,Alaska,2020,731158.0
+02,Alaska,2021,732673.0
 04,Arizona,1996,4586940.0
 04,Arizona,1997,4736990.0
 04,Arizona,1998,4883342.0
@@ -74,6 +76,7 @@ fips,region,time,population
 04,Arizona,2018,7158024.0
 04,Arizona,2019,7278717.0
 04,Arizona,2020,7421401.0
+04,Arizona,2021,7276316.0
 05,Arkansas,1996,2572109.0
 05,Arkansas,1997,2601090.0
 05,Arkansas,1998,2626289.0
@@ -99,6 +102,7 @@ fips,region,time,population
 05,Arkansas,2018,3009733.0
 05,Arkansas,2019,3017804.0
 05,Arkansas,2020,3030522.0
+05,Arkansas,2021,3025891.0
 06,California,1996,32018834.0
 06,California,1997,32486010.0
 06,California,1998,32987675.000000004
@@ -124,6 +128,7 @@ fips,region,time,population
 06,California,2018,39461588.0
 06,California,2019,39512223.0
 06,California,2020,39368078.0
+06,California,2021,39237836.0
 08,Colorado,1996,3919972.0
 08,Colorado,1997,4018293.0
 08,Colorado,1998,4116639.0
@@ -149,6 +154,7 @@ fips,region,time,population
 08,Colorado,2018,5691287.0
 08,Colorado,2019,5758736.0
 08,Colorado,2020,5807719.0
+08,Colorado,2021,5812069.0
 09,Connecticut,1996,3336685.0
 09,Connecticut,1997,3349348.0
 09,Connecticut,1998,3365352.0
@@ -174,6 +180,7 @@ fips,region,time,population
 09,Connecticut,2018,3571520.0
 09,Connecticut,2019,3565287.0
 09,Connecticut,2020,3557006.0
+09,Connecticut,2021,3605597.0
 10,Delaware,1996,740977.0
 10,Delaware,1997,751487.0
 10,Delaware,1998,763335.0
@@ -199,6 +206,7 @@ fips,region,time,population
 10,Delaware,2018,965479.0
 10,Delaware,2019,973764.0
 10,Delaware,2020,986809.0
+10,Delaware,2021,1003384.0
 11,District of Columbia,1996,572377.0
 11,District of Columbia,1997,567736.0
 11,District of Columbia,1998,565230.0
@@ -224,6 +232,7 @@ fips,region,time,population
 11,District of Columbia,2018,701547.0
 11,District of Columbia,2019,705749.0
 11,District of Columbia,2020,712816.0
+11,District of Columbia,2021,670050.0
 12,Florida,1996,14853360.0
 12,Florida,1997,15186304.0
 12,Florida,1998,15486559.0
@@ -249,6 +258,7 @@ fips,region,time,population
 12,Florida,2018,21244317.0
 12,Florida,2019,21477737.0
 12,Florida,2020,21733312.0
+12,Florida,2021,21781128.0
 13,Georgia,1996,7501069.0
 13,Georgia,1997,7685099.0
 13,Georgia,1998,7863536.0
@@ -274,6 +284,7 @@ fips,region,time,population
 13,Georgia,2018,10511131.0
 13,Georgia,2019,10617423.0
 13,Georgia,2020,10710017.0
+13,Georgia,2021,10799566.0
 15,Hawaii,1996,1203755.0
 15,Hawaii,1997,1211640.0
 15,Hawaii,1998,1215233.0
@@ -299,6 +310,7 @@ fips,region,time,population
 15,Hawaii,2018,1420593.0
 15,Hawaii,2019,1415872.0
 15,Hawaii,2020,1407006.0
+15,Hawaii,2021,1441553.0
 16,Idaho,1996,1203083.0
 16,Idaho,1997,1228520.0
 16,Idaho,1998,1252330.0
@@ -324,6 +336,7 @@ fips,region,time,population
 16,Idaho,2018,1750536.0
 16,Idaho,2019,1787065.0
 16,Idaho,2020,1826913.0
+16,Idaho,2021,1900923.0
 17,Illinois,1996,12101997.0
 17,Illinois,1997,12185715.0
 17,Illinois,1998,12271847.0
@@ -349,6 +362,7 @@ fips,region,time,population
 17,Illinois,2018,12723071.0
 17,Illinois,2019,12671821.0
 17,Illinois,2020,12587530.0
+17,Illinois,2021,12671469.0
 18,Indiana,1996,5906013.0
 18,Indiana,1997,5955267.0
 18,Indiana,1998,5998880.0
@@ -374,6 +388,7 @@ fips,region,time,population
 18,Indiana,2018,6695497.0
 18,Indiana,2019,6732219.0
 18,Indiana,2020,6754953.0
+18,Indiana,2021,6805985.0
 19,Iowa,1996,2880000.0
 19,Iowa,1997,2891119.0
 19,Iowa,1998,2902872.0
@@ -399,6 +414,7 @@ fips,region,time,population
 19,Iowa,2018,3148618.0
 19,Iowa,2019,3155070.0
 19,Iowa,2020,3163561.0
+19,Iowa,2021,3193079.0
 20,Kansas,1996,2614554.0
 20,Kansas,1997,2635292.0
 20,Kansas,1998,2660598.0
@@ -424,6 +440,7 @@ fips,region,time,population
 20,Kansas,2018,2911359.0
 20,Kansas,2019,2913314.0
 20,Kansas,2020,2913805.0
+20,Kansas,2021,2934582.0
 21,Kentucky,1996,3919535.0
 21,Kentucky,1997,3952747.0
 21,Kentucky,1998,3985390.0
@@ -449,6 +466,7 @@ fips,region,time,population
 21,Kentucky,2018,4461153.0
 21,Kentucky,2019,4467673.0
 21,Kentucky,2020,4477251.0
+21,Kentucky,2021,4509394.0
 22,Louisiana,1996,4398877.0
 22,Louisiana,1997,4421071.0
 22,Louisiana,1998,4440344.0
@@ -474,6 +492,7 @@ fips,region,time,population
 22,Louisiana,2018,4659690.0
 22,Louisiana,2019,4648794.0
 22,Louisiana,2020,4645318.0
+22,Louisiana,2021,4624047.0
 23,Maine,1996,1249060.0
 23,Maine,1997,1254774.0
 23,Maine,1998,1259127.0
@@ -499,6 +518,7 @@ fips,region,time,population
 23,Maine,2018,1339057.0
 23,Maine,2019,1344212.0
 23,Maine,2020,1350141.0
+23,Maine,2021,1372247.0
 24,Maryland,1996,5111986.0
 24,Maryland,1997,5157328.0
 24,Maryland,1998,5204464.0
@@ -524,6 +544,7 @@ fips,region,time,population
 24,Maryland,2018,6035802.0
 24,Maryland,2019,6045680.0
 24,Maryland,2020,6055802.0
+24,Maryland,2021,6165129.0
 25,Massachusetts,1996,6179756.0
 25,Massachusetts,1997,6226058.0
 25,Massachusetts,1998,6271838.0
@@ -549,6 +570,7 @@ fips,region,time,population
 25,Massachusetts,2018,6882635.0
 25,Massachusetts,2019,6892503.0
 25,Massachusetts,2020,6893574.0
+25,Massachusetts,2021,6984723.0
 26,Michigan,1996,9758645.0
 26,Michigan,1997,9809051.0
 26,Michigan,1998,9847942.0
@@ -574,6 +596,7 @@ fips,region,time,population
 26,Michigan,2018,9984072.0
 26,Michigan,2019,9986857.0
 26,Michigan,2020,9966555.0
+26,Michigan,2021,10050811.0
 27,Minnesota,1996,4712827.0
 27,Minnesota,1997,4763390.0
 27,Minnesota,1998,4813412.0
@@ -599,6 +622,7 @@ fips,region,time,population
 27,Minnesota,2018,5606249.0
 27,Minnesota,2019,5639632.0
 27,Minnesota,2020,5657342.0
+27,Minnesota,2021,5707390.0
 28,Mississippi,1996,2748085.0
 28,Mississippi,1997,2777004.0
 28,Mississippi,1998,2804834.0
@@ -624,6 +648,7 @@ fips,region,time,population
 28,Mississippi,2018,2981020.0
 28,Mississippi,2019,2976149.0
 28,Mississippi,2020,2966786.0
+28,Mississippi,2021,2949965.0
 29,Missouri,1996,5431553.0
 29,Missouri,1997,5481193.0
 29,Missouri,1998,5521765.0
@@ -649,6 +674,7 @@ fips,region,time,population
 29,Missouri,2018,6121623.0
 29,Missouri,2019,6137428.0
 29,Missouri,2020,6151548.0
+29,Missouri,2021,6168187.0
 30,Montana,1996,886254.0
 30,Montana,1997,889865.0
 30,Montana,1998,892431.0
@@ -674,6 +700,7 @@ fips,region,time,population
 30,Montana,2018,1060665.0
 30,Montana,2019,1068778.0
 30,Montana,2020,1080577.0
+30,Montana,2021,1104271.0
 31,Nebraska,1996,1673740.0
 31,Nebraska,1997,1686418.0
 31,Nebraska,1998,1695816.0
@@ -699,6 +726,7 @@ fips,region,time,population
 31,Nebraska,2018,1925614.0
 31,Nebraska,2019,1934408.0
 31,Nebraska,2020,1937552.0
+31,Nebraska,2021,1963692.0
 32,Nevada,1996,1666320.0
 32,Nevada,1997,1764104.0
 32,Nevada,1998,1853191.0
@@ -724,6 +752,7 @@ fips,region,time,population
 32,Nevada,2018,3027341.0
 32,Nevada,2019,3080156.0
 32,Nevada,2020,3138259.0
+32,Nevada,2021,3143991.0
 33,New Hampshire,1996,1174719.0
 33,New Hampshire,1997,1189425.0
 33,New Hampshire,1998,1205940.0
@@ -749,6 +778,7 @@ fips,region,time,population
 33,New Hampshire,2018,1353465.0
 33,New Hampshire,2019,1359711.0
 33,New Hampshire,2020,1366275.0
+33,New Hampshire,2021,1388992.0
 34,New Jersey,1996,8149596.0
 34,New Jersey,1997,8218808.000000001
 34,New Jersey,1998,8287418.0
@@ -774,6 +804,7 @@ fips,region,time,population
 34,New Jersey,2018,8886025.0
 34,New Jersey,2019,8882190.0
 34,New Jersey,2020,8882371.0
+34,New Jersey,2021,9267130.0
 35,New Mexico,1996,1752326.0
 35,New Mexico,1997,1774839.0
 35,New Mexico,1998,1793484.0
@@ -799,6 +830,7 @@ fips,region,time,population
 35,New Mexico,2018,2092741.0
 35,New Mexico,2019,2096829.0
 35,New Mexico,2020,2106319.0
+35,New Mexico,2021,2115877.0
 36,New York,1996,18588460.0
 36,New York,1997,18656546.0
 36,New York,1998,18755906.0
@@ -824,6 +856,7 @@ fips,region,time,population
 36,New York,2018,19530351.0
 36,New York,2019,19453561.0
 36,New York,2020,19336776.0
+36,New York,2021,19835913.0
 37,North Carolina,1996,7500670.0
 37,North Carolina,1997,7656825.0
 37,North Carolina,1998,7809121.0
@@ -849,6 +882,7 @@ fips,region,time,population
 37,North Carolina,2018,10381615.0
 37,North Carolina,2019,10488084.0
 37,North Carolina,2020,10600823.0
+37,North Carolina,2021,10551162.0
 38,North Dakota,1996,650382.0
 38,North Dakota,1997,649716.0
 38,North Dakota,1998,647532.0
@@ -874,6 +908,7 @@ fips,region,time,population
 38,North Dakota,2018,758080.0
 38,North Dakota,2019,762062.0
 38,North Dakota,2020,765309.0
+38,North Dakota,2021,774948.0
 39,Ohio,1996,11242827.0
 39,Ohio,1997,11277357.0
 39,Ohio,1998,11311536.0
@@ -899,6 +934,7 @@ fips,region,time,population
 39,Ohio,2018,11676341.0
 39,Ohio,2019,11689100.0
 39,Ohio,2020,11693217.0
+39,Ohio,2021,11780017.0
 40,Oklahoma,1996,3340129.0
 40,Oklahoma,1997,3372917.0
 40,Oklahoma,1998,3405194.0
@@ -924,6 +960,7 @@ fips,region,time,population
 40,Oklahoma,2018,3940235.0
 40,Oklahoma,2019,3956971.0
 40,Oklahoma,2020,3980783.0
+40,Oklahoma,2021,3986639.0
 41,Oregon,1996,3247111.0
 41,Oregon,1997,3304310.0
 41,Oregon,1998,3352449.0
@@ -949,6 +986,7 @@ fips,region,time,population
 41,Oregon,2018,4181886.0
 41,Oregon,2019,4217737.0
 41,Oregon,2020,4241507.0
+41,Oregon,2021,4246155.0
 42,Pennsylvania,1996,12220464.0
 42,Pennsylvania,1997,12227814.0
 42,Pennsylvania,1998,12245672.0
@@ -974,6 +1012,7 @@ fips,region,time,population
 42,Pennsylvania,2018,12800922.0
 42,Pennsylvania,2019,12801989.0
 42,Pennsylvania,2020,12783254.0
+42,Pennsylvania,2021,12964056.0
 44,Rhode Island,1996,1020893.0
 44,Rhode Island,1997,1025353.0000000001
 44,Rhode Island,1998,1031155.0
@@ -999,6 +1038,7 @@ fips,region,time,population
 44,Rhode Island,2018,1058287.0
 44,Rhode Island,2019,1059361.0
 44,Rhode Island,2020,1057125.0
+44,Rhode Island,2021,1095610.0
 45,South Carolina,1996,3796200.0
 45,South Carolina,1997,3859696.0
 45,South Carolina,1998,3919235.0
@@ -1024,6 +1064,7 @@ fips,region,time,population
 45,South Carolina,2018,5084156.0
 45,South Carolina,2019,5148714.0
 45,South Carolina,2020,5218040.0
+45,South Carolina,2021,5190705.0
 46,South Dakota,1996,742213.0
 46,South Dakota,1997,744223.0
 46,South Dakota,1998,746058.0
@@ -1049,6 +1090,7 @@ fips,region,time,population
 46,South Dakota,2018,878698.0
 46,South Dakota,2019,884659.0
 46,South Dakota,2020,892717.0
+46,South Dakota,2021,895376.0
 47,Tennessee,1996,5416643.0
 47,Tennessee,1997,5499233.0
 47,Tennessee,1998,5570045.0
@@ -1074,6 +1116,7 @@ fips,region,time,population
 47,Tennessee,2018,6771631.0
 47,Tennessee,2019,6829174.0
 47,Tennessee,2020,6886834.0
+47,Tennessee,2021,6975218.0
 48,Texas,1996,19340342.0
 48,Texas,1997,19740317.0
 48,Texas,1998,20157531.0
@@ -1099,6 +1142,7 @@ fips,region,time,population
 48,Texas,2018,28628666.0
 48,Texas,2019,28995881.0
 48,Texas,2020,29360759.0
+48,Texas,2021,29527941.0
 49,Utah,1996,2067976.0
 49,Utah,1997,2119784.0
 49,Utah,1998,2165960.0
@@ -1124,6 +1168,7 @@ fips,region,time,population
 49,Utah,2018,3153550.0
 49,Utah,2019,3205958.0
 49,Utah,2020,3249879.0
+49,Utah,2021,3337975.0
 50,Vermont,1996,593701.0
 50,Vermont,1997,597239.0
 50,Vermont,1998,600416.0
@@ -1149,6 +1194,7 @@ fips,region,time,population
 50,Vermont,2018,624358.0
 50,Vermont,2019,623989.0
 50,Vermont,2020,623347.0
+50,Vermont,2021,645570.0
 51,Virginia,1996,6750884.0
 51,Virginia,1997,6829183.0
 51,Virginia,1998,6900918.0
@@ -1174,6 +1220,7 @@ fips,region,time,population
 51,Virginia,2018,8501286.0
 51,Virginia,2019,8535519.0
 51,Virginia,2020,8590563.0
+51,Virginia,2021,8642274.0
 53,Washington,1996,5569753.0
 53,Washington,1997,5674747.0
 53,Washington,1998,5769562.0
@@ -1199,6 +1246,7 @@ fips,region,time,population
 53,Washington,2018,7523869.0
 53,Washington,2019,7614893.0
 53,Washington,2020,7693612.0
+53,Washington,2021,7738692.0
 54,West Virginia,1996,1822808.0
 54,West Virginia,1997,1819113.0
 54,West Virginia,1998,1815609.0
@@ -1224,6 +1272,7 @@ fips,region,time,population
 54,West Virginia,2018,1804291.0
 54,West Virginia,2019,1792147.0
 54,West Virginia,2020,1784787.0
+54,West Virginia,2021,1782959.0
 55,Wisconsin,1996,5229986.0
 55,Wisconsin,1997,5266213.0
 55,Wisconsin,1998,5297672.0
@@ -1249,6 +1298,7 @@ fips,region,time,population
 55,Wisconsin,2018,5807406.0
 55,Wisconsin,2019,5822434.0
 55,Wisconsin,2020,5832655.0
+55,Wisconsin,2021,5895908.0
 56,Wyoming,1996,488167.0
 56,Wyoming,1997,489451.0
 56,Wyoming,1998,490787.0
@@ -1274,4 +1324,6 @@ fips,region,time,population
 56,Wyoming,2018,577601.0
 56,Wyoming,2019,578759.0
 56,Wyoming,2020,582328.0
+56,Wyoming,2021,578803.0
 72,Puerto Rico,2020,3159343.0
+72,Puerto Rico,2021,3263584.0

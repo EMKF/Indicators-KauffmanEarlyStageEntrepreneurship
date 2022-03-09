@@ -19,7 +19,7 @@ pd.set_option('chained_assignment',None)
 def _cps():
     df_us = pd.DataFrame()
     df_state = pd.DataFrame()
-    for year in [y - 1900 if y < 2000 else str(y - 2000).zfill(2) for y in range(1996, 2021)]:
+    for year in [y - 1900 if y < 2000 else str(y - 2000).zfill(2) for y in range(1996, 2022)]:
         df_in = pd.read_csv(f'https://people.ucsc.edu/~rfairlie/data/microdata/kieadata{year}.csv')
 
         df_us = df_us.append(h.preprocess_cps(df_in, 'us'))
@@ -52,7 +52,6 @@ def raw_data_update():
             astype({'time': 'int', 'population': 'int'}). \
             query('time >= 2000'). \
             append(h.pep_pre_2000(region)). \
-            append(h.pep_2020(region)). \
             sort_values(['fips', 'region', 'time']). \
             reset_index(drop=True).\
             to_csv(c.filenamer(f'data/raw_data/pep_{region}.csv'), index=False)
