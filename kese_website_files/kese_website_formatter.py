@@ -36,13 +36,13 @@ def rne_data_create():
     rne = rne.rename(columns={"name": "region"})
     # sort by demographic
     rne = rne.sort_values(by=['demographic-type']).reset_index(drop=True)
-    # rne.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/kese_website_rne.csv', index=False)
+    rne.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_kese_website_rne.csv', index=False)
     return rne
 
 def ose_data_create():
     # pull state and national
-    state = pd.read_excel('/Users/hmurray/Projects/kese/kese_website_files/Kauffman_Indicators_Data_State_1996_2021.xlsx', sheet_name='Opportunity Share of NE')
-    national = pd.read_excel('/Users/hmurray/Projects/kese/kese_website_files/Kauffman_Indicators_Data_National_1996_2021.xlsx', sheet_name='Opportunity Share of NE')
+    state = pd.read_excel(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_rob_kese_files/Kauffman_Indicators_Data_State_1996_2021.xlsx', sheet_name='Opportunity Share of NE')
+    national = pd.read_excel(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_rob_kese_files/Kauffman_Indicators_Data_National_1996_2021.xlsx', sheet_name='Opportunity Share of NE')
     # rename and create demographic columns
     national = national.rename(columns={"demtype": "demographic-type"})
     state.insert(1, 'demographic-type', np.nan)
@@ -63,17 +63,13 @@ def ose_data_create():
     ose = ose.rename(columns={"name": "region"})
     # sort by demographic
     ose = ose.sort_values(by=['demographic-type']).reset_index(drop=True)
-    # ose.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/kese_website_ose.csv', index=False)
+    ose.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_kese_website_ose.csv', index=False)
     return ose
 
 def sjc_data_create():
     # pull state and national
-    state = pd.read_excel(
-        '/Users/hmurray/Projects/kese/kese_website_files/Kauffman_Indicators_Data_State_1996_2021.xlsx',
-        sheet_name='Startup Job Creation')
-    national = pd.read_excel(
-        '/Users/hmurray/Projects/kese/kese_website_files/Kauffman_Indicators_Data_National_1996_2021.xlsx',
-        sheet_name='Startup Job Creation')
+    state = pd.read_excel(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_rob_kese_files/Kauffman_Indicators_Data_State_1996_2021.xlsx', sheet_name='Startup Job Creation')
+    national = pd.read_excel(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_rob_kese_files/Kauffman_Indicators_Data_National_1996_2021.xlsx', sheet_name='Startup Job Creation')
     # rename and create demographic columns
     state.insert(1, 'demographic-type', np.nan)
     state.insert(2, 'demographic', np.nan)
@@ -101,17 +97,13 @@ def sjc_data_create():
     sjc = sjc.astype({'demographic-type': 'object', 'demographic': 'object'})
     # sort by demographic
     sjc = sjc.sort_values(by=['demographic-type']).reset_index(drop=True)
-    # sjc.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/kese_website_sjc.csv', index=False)
+    sjc.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_kese_website_sjc.csv', index=False)
     return sjc
 
 def ssr_data_create():
     # pull state and national
-    state = pd.read_excel(
-        '/Users/hmurray/Projects/kese/kese_website_files/Kauffman_Indicators_Data_State_1996_2021.xlsx',
-        sheet_name='Startup Survival Rate')
-    national = pd.read_excel(
-        '/Users/hmurray/Projects/kese/kese_website_files/Kauffman_Indicators_Data_National_1996_2021.xlsx',
-        sheet_name='Startup Survival Rate')
+    state = pd.read_excel(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_rob_kese_files/Kauffman_Indicators_Data_State_1996_2021.xlsx', sheet_name='Startup Survival Rate')
+    national = pd.read_excel(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_rob_kese_files/Kauffman_Indicators_Data_National_1996_2021.xlsx', sheet_name='Startup Survival Rate')
     # rename and create demographic columns
     state.insert(1, 'demographic-type', np.nan)
     state.insert(2, 'demographic', np.nan)
@@ -139,17 +131,13 @@ def ssr_data_create():
     ssr = ssr.astype({'demographic-type': 'object', 'demographic': 'object'})
     # sort by demographic
     ssr = ssr.sort_values(by=['demographic-type']).reset_index(drop=True)
-    # ssr.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/kese_website_ssr.csv', index=False)
+    ssr.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_kese_website_ssr.csv', index=False)
     return ssr
 
 def index_data_create():
     # pull state and national
-    state = pd.read_excel(
-        '/Users/hmurray/Projects/kese/kese_website_files/Kauffman_Indicators_Data_State_1996_2021.xlsx',
-        sheet_name='KESE Index')
-    national = pd.read_excel(
-        '/Users/hmurray/Projects/kese/kese_website_files/Kauffman_Indicators_Data_National_1996_2021.xlsx',
-        sheet_name='KESE Index')
+    state = pd.read_excel(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_rob_kese_files/Kauffman_Indicators_Data_State_1996_2021.xlsx', sheet_name='KESE Index')
+    national = pd.read_excel(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_rob_kese_files/Kauffman_Indicators_Data_National_1996_2021.xlsx', sheet_name='KESE Index')
     # subset columns
     national = national[national.columns[pd.Series(national.columns).str.startswith(('sname', 'demo', 'z'))]]
     state = state[state.columns[pd.Series(state.columns).str.startswith(('sname', 'demo', 'z'))]]
@@ -173,7 +161,7 @@ def index_data_create():
     index = index.astype({'demographic-type': 'object', 'demographic': 'object'})
     # sort by demographic
     index = index.sort_values(by=['demographic-type']).reset_index(drop=True)
-    # index.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/kese_website_zindex.csv', index=False)
+    index.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_kese_website_zindex.csv', index=False)
     return index
 
 def ind_data_download_create(df, name):
@@ -196,7 +184,7 @@ def data_download(rne, ose, sjc, ssr, index):
     download = pd.merge(rneosesjcssr, index, how='left', on=['fips', 'name', 'type', 'category', 'year']).reset_index(drop=True)
     download = download.sort_values(by=['name', 'year']).reset_index(drop=True)
     print(download.head())
-    # download.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/kese_download.csv', index=False)
+    download.to_csv(f's3://emkf.data.research/indicators/kese/data_outputs/2021_kese_website/2021_kese_download.csv', index=False)
     return download
 
 

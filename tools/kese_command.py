@@ -253,9 +253,9 @@ def _region_all_pipeline(region):
 
 def _download_csv_save(df, aws_filepath):
     """Save download-version of data to a csv."""
-    df.to_csv(c.filenamer('data/kese_download.csv'), index=False)
+    df.to_csv(c.filenamer('data/kcr_calc_2021_kese_download.csv'), index=False)
     if aws_filepath:
-        df.to_csv(f'{aws_filepath}/kese_download.csv', index=False)
+        df.to_csv(f'{aws_filepath}/kcr_calc_2021_kese_download.csv', index=False)
     return df
 
 
@@ -290,9 +290,9 @@ def _website_csvs_save(df, aws_filepath):
     for indicator in ['rne', 'ose', 'sjc', 'ssr', 'zindex']:
         df_out = df.pipe(_download_to_alley_formatter, indicator)
 
-        df_out.to_csv(c.filenamer(f'data/kese_website_{indicator}.csv'), index=False)
+        df_out.to_csv(c.filenamer(f'data/kcr_calc_2021_kese_website_{indicator}.csv'), index=False)
         if aws_filepath:
-            df_out.to_csv(f'{aws_filepath}/kese_website_{indicator}.csv', index=False)
+            df_out.to_csv(f'{aws_filepath}/kcr_calc_2021_kese_website_{indicator}.csv', index=False)
 
 
 def _raw_data_remove(remove_data=True):
@@ -337,5 +337,5 @@ if __name__ == '__main__':
     kese_data_create_all(
         raw_data_fetch=True,
         raw_data_remove=True,
-        aws_filepath='s3://emkf.data.research/indicators/kese/data_outputs/'
+        aws_filepath='s3://emkf.data.research/indicators/kese/data_outputs/kcr_kese_calculator'
     )
