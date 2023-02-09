@@ -2,9 +2,9 @@ import sys
 import boto3
 import joblib
 import pandas as pd
-import tools.constants as c
-import tools.kese_helpers as h
-from kauffman.data import bed, pep
+import constants as c
+import kese_helpers as h
+from kauffman.data_fetch import bed, pep
 from kauffman.tools import file_to_s3
 
 
@@ -30,10 +30,10 @@ def raw_data_update():
 
     for region in ['us', 'state']:
         # BED
-        bed(series='establishment age and survival', table='1bf', obs_level=region). \
+        bed(series='establishment age and survival', table='1bf', geo_level=region). \
             to_csv(c.filenamer(f'data/raw_data/bed_table1_{region}.csv'), index=False)
 
-        bed(series='establishment age and survival', table=7, obs_level=region). \
+        bed(series='establishment age and survival', table=7, geo_level=region). \
             rename(columns={'age': 'firm_age'}). \
             assign(Lestablishments=lambda x: x['establishments'].shift(1)).\
             to_csv(c.filenamer(f'data/raw_data/bed_table7_{region}.csv'), index=False)
@@ -61,7 +61,7 @@ def s3_update():
 
 def main():
     raw_data_update()
-    s3_update()
+    # s3_update()
 
 
 if __name__ == '__main__':

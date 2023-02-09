@@ -4,9 +4,9 @@ import shutil
 import joblib
 import numpy as np
 import pandas as pd
-import tools.constants as c
-import tools.kese_helpers as h
-from kauffman.data import pep, bed
+import constants as c
+import kese_helpers as h
+from kauffman.data_fetch import pep, bed
 
 
 def _format_csv(df):
@@ -55,9 +55,9 @@ def _fetch_data_bed(region, fetch_data):
     """
     if fetch_data:
         print(f'\tcreating datasets neb/data/temp/bed_table1_{region}.pkl and neb/data/temp/bed_table7_{region}.pkl')
-        df_t1 = bed(series='establishment age and survival', table='1bf', obs_level=region)
+        df_t1 = bed(series='establishment age and survival', table='1bf', geo_level=region)
 
-        df_t7 = bed(series='establishment age and survival', table=7, obs_level=region). \
+        df_t7 = bed(series='establishment age and survival', table=7, geo_level=region). \
             rename(columns={'age': 'firm_age'}). \
             assign(Lestablishments=lambda x: x['establishments'].shift(1))
     else:
@@ -335,7 +335,7 @@ def kese_data_create_all(raw_data_fetch, raw_data_remove, aws_filepath=None):
 
 if __name__ == '__main__':
     kese_data_create_all(
-        raw_data_fetch=True,
+        raw_data_fetch=False,
         raw_data_remove=True,
-        aws_filepath='s3://emkf.data.research/indicators/kese/data_outputs/kcr_kese_calculator'
+        # aws_filepath='s3://emkf.data.research/indicators/kese/data_outputs/kcr_kese_calculator'
     )
