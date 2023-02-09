@@ -32,37 +32,40 @@ def raw_data_update():
     df_state.to_csv(c.filenamer(f'data/raw_data/cps_state.csv'), index=False)
 
 
-    for region in ['us', 'state']:
+    for geo_level in ['us', 'state']:
         # BED
         bed(
                 series='establishment age and survival', table='1bf', 
-                geo_level=region
+                geo_level=geo_level
             ) \
             .to_csv(
-                c.filenamer(f'data/raw_data/bed_table1_{region}.csv'), 
+                c.filenamer(f'data/raw_data/bed_table1_{geo_level}.csv'), 
                 index=False
             )
 
         bed(
                 series='establishment age and survival', table=7, 
-                geo_level=region
+                geo_level=geo_level
             ) \
             .rename(columns={'age': 'firm_age'}) \
             .assign(Lestablishments=lambda x: x['establishments'].shift(1)) \
             .to_csv(
-                c.filenamer(f'data/raw_data/bed_table7_{region}.csv'), 
+                c.filenamer(f'data/raw_data/bed_table7_{geo_level}.csv'), 
                 index=False
             )
 
         # PEP
-        pep(region) \
+        pep(geo_level) \
             .rename(columns={'POP': 'population'}) \
             .astype({'time': 'int', 'population': 'int'}) \
             .query('time >= 2000') \
-            .append(h.pep_pre_2000(region)) \
+            .append(h.pep_pre_2000(geo_level)) \
             .sort_values(['fips', 'region', 'time']) \
             .reset_index(drop=True) \
-            .to_csv(c.filenamer(f'data/raw_data/pep_{region}.csv'), index=False)
+            .to_csv(
+                c.filenamer(f'data/raw_data/pep_{geo_level}.csv'), 
+                index=False
+            )
 
 
 def s3_update():

@@ -19,8 +19,9 @@ def _fetch_data_cps(fetch_data):
 
     Parameters
     ----------
-    region: {'us', 'state'}
-        Geographical level of the data.
+    fetch_data: bool
+        Whether to fetch the data from source (as opposed to using the data in
+        the raw data folder).
     """
     print('Fetching CPS data')
 
@@ -45,13 +46,13 @@ def _fetch_data_cps(fetch_data):
     joblib.dump(df_state, c.filenamer(f'data/temp/cps_state.pkl'))
 
 
-def _fetch_data_bed(region, fetch_data):
+def _fetch_data_bed(geo_level, fetch_data):
     """
     Fetch raw BED data. Data comes from two tables: table 1bf and 7.
 
     Parameters
     ----------
-    region: {'us', 'state'}
+    geo_level: {'us', 'state'}
         Geographical level of data to be fetched.
     fetch_data: bool
         When true, code fetches the raw data from source; otherwise, it uses the
@@ -59,60 +60,60 @@ def _fetch_data_bed(region, fetch_data):
     """
     if fetch_data:
         print(
-            f'\ncreating datasets neb/data/temp/bed_table1_{region}.pkl'
-            f' and neb/data/temp/bed_table7_{region}.pkl'
+            f'\ncreating datasets neb/data/temp/bed_table1_{geo_level}.pkl'
+            f' and neb/data/temp/bed_table7_{geo_level}.pkl'
         )
         df_t1 = bed(
             series='establishment age and survival', table='1bf', 
-            geo_level=region
+            geo_level=geo_level
         )
 
         df_t7 = bed(
                 series='establishment age and survival', table=7, 
-                geo_level=region
+                geo_level=geo_level
             ) \
             .rename(columns={'age': 'firm_age'}) \
             .assign(Lestablishments=lambda x: x['establishments'].shift(1))
     else:
         df_t1 = pd.read_csv(
-                c.filenamer(f'data/raw_data/bed_table1_{region}.csv')
+                c.filenamer(f'data/raw_data/bed_table1_{geo_level}.csv')
             ) \
             .pipe(_format_csv)
         df_t7 = pd.read_csv(
-                c.filenamer(f'data/raw_data/bed_table7_{region}.csv')
+                c.filenamer(f'data/raw_data/bed_table7_{geo_level}.csv')
             ) \
             .pipe(_format_csv)
 
-    joblib.dump(df_t1, c.filenamer(f'data/temp/bed_table1_{region}.pkl'))
-    joblib.dump(df_t7, c.filenamer(f'data/temp/bed_table7_{region}.pkl'))
+    joblib.dump(df_t1, c.filenamer(f'data/temp/bed_table1_{geo_level}.pkl'))
+    joblib.dump(df_t7, c.filenamer(f'data/temp/bed_table7_{geo_level}.pkl'))
 
 
-def _fetch_data_pep(region, fetch_data):
+def _fetch_data_pep(geo_level, fetch_data):
     """
     Fetch raw PEP data.
 
     Parameters
     ----------
-    region: {'us', 'state'}
+    geo_level: {'us', 'state'}
         Geographical level of data to be fetched.
     fetch_data: bool
         When true, code fetches the raw data from source; otherwise, it uses the
         data in data/raw_data.
     """
     if fetch_data:
-        print(f'\ncreating dataset neb/data/temp/pep_{region}.pkl')
-        df = pep(region) \
+        print(f'\ncreating dataset neb/data/temp/pep_{geo_level}.pkl')
+        df = pep(geo_level) \
             .rename(columns={'POP': 'population'}) \
             .astype({'time': 'int', 'population': 'int'}) \
             .query('time >= 2000') \
-            .append(h.pep_pre_2000(region)) \
+            .append(h.pep_pre_2000(geo_level)) \
             .sort_values(['fips', 'region', 'time']) \
             .reset_index(drop=True)
     else:
-        df = pd.read_csv(c.filenamer(f'data/raw_data/pep_{region}.csv')) \
+        df = pd.read_csv(c.filenamer(f'data/raw_data/pep_{geo_level}.csv')) \
             .pipe(_format_csv)
 
-    joblib.dump(df, c.filenamer(f'data/temp/pep_{region}.pkl'))
+    joblib.dump(df, c.filenamer(f'data/temp/pep_{geo_level}.pkl'))
 
 
 def _raw_data_fetch(fetch_data):
@@ -131,18 +132,18 @@ def _raw_data_fetch(fetch_data):
     os.mkdir(c.filenamer('data/temp'))
 
     _fetch_data_cps(fetch_data)
-    for region in ['us', 'state']:
-        _fetch_data_bed(region, fetch_data)
-        _fetch_data_pep(region, fetch_data)
+    for geo_level in ['us', 'state']:
+        _fetch_data_bed(geo_level, fetch_data)
+        _fetch_data_pep(geo_level, fetch_data)
 
 
-def _raw_data_merge(region):
+def _raw_data_merge(geo_level):
     """
     Merge CPS, BED, and PEP data for a given geographical level.
 
     Parameters
     ----------
-    region: {'us', 'state'}
+    geo_level: {'us', 'state'}
         Geographical level of the data.
 
     Returns
@@ -152,19 +153,19 @@ def _raw_data_merge(region):
     """
 
     # Prep CPS data
-    df_cps = joblib.load(c.filenamer(f'data/temp/cps_{region}.pkl'))
+    df_cps = joblib.load(c.filenamer(f'data/temp/cps_{geo_level}.pkl'))
 
     # Prep BED data
-    df_bed1 = joblib.load(c.filenamer(f'data/temp/bed_table1_{region}.pkl')) \
+    df_bed1 = joblib.load(c.filenamer(f'data/temp/bed_table1_{geo_level}.pkl')) \
         [['fips', 'time', 'opening_job_gains']]
 
-    df_bed7 = joblib.load(c.filenamer(f'data/temp/bed_table7_{region}.pkl')) \
+    df_bed7 = joblib.load(c.filenamer(f'data/temp/bed_table7_{geo_level}.pkl')) \
         .query('firm_age == 1') \
         [['fips', 'end_year', 'establishments', 'Lestablishments']] \
         .rename(columns={'end_year': 'time'})
 
     # Prep PEP data
-    df_pop = joblib.load(c.filenamer(f'data/temp/pep_{region}.pkl')) \
+    df_pop = joblib.load(c.filenamer(f'data/temp/pep_{geo_level}.pkl')) \
         [['fips', 'time', 'population']]
 
     return df_cps \
@@ -173,7 +174,7 @@ def _raw_data_merge(region):
         .merge(df_pop, how='left', on=['time', 'fips'])
 
 
-def _index_create(df, region):
+def _index_create(df, geo_level):
     """
     Generate the Kauffman index.
 
@@ -181,7 +182,7 @@ def _index_create(df, region):
     ----------
     df: DataFrame
         The indicators data
-    region: {'us', 'state'}
+    geo_level: {'us', 'state'}
         Geographical level of the data.
 
     Returns
@@ -189,7 +190,7 @@ def _index_create(df, region):
     DataFrame
         The original data plus the new index variable
     """
-    if region == 'us':
+    if geo_level == 'us':
         # Generate the means and standard deviations of the US-level data 
         # indicators
         df_us = df.query('1996 <= time <= 2015 and category == "Total"')
@@ -201,7 +202,7 @@ def _index_create(df, region):
         joblib.dump(us_means, c.filenamer('data/temp/us_means.pkl'))
         joblib.dump(us_std, c.filenamer('data/temp/us_std.pkl'))
 
-    elif region == 'state':
+    elif geo_level == 'state':
         us_means = joblib.load(c.filenamer('data/temp/us_means.pkl'))
         us_std = joblib.load(c.filenamer('data/temp/us_std.pkl'))
     
@@ -218,7 +219,7 @@ def _index_create(df, region):
         .drop(columns=['ose_z', 'rne_z', 'sjc_z', 'ssr_z'])
 
 
-def _indicators_create(df, region):
+def _indicators_create(df, geo_level):
     """
     Calculate the remaining Kauffman indicators and the index.
 
@@ -226,7 +227,7 @@ def _indicators_create(df, region):
     ----------
     df: DataFrame
         Raw merged data
-    region: {'us', 'state'}
+    geo_level: {'us', 'state'}
         Geographical level of the data.
 
     Returns
@@ -237,7 +238,7 @@ def _indicators_create(df, region):
 
     # 3 year trailing average of certains subsets of the data (RNE and OSE for 
     # state-level, OSE for non-total US-level)
-    if region == 'state':
+    if geo_level == 'state':
         df[['rne', 'ose']] = df.groupby(['fips'])[['rne', 'ose']] \
             .transform(lambda x: x.rolling(window=3).mean())
     else:   
@@ -254,7 +255,7 @@ def _indicators_create(df, region):
     df.loc[df.category != 'Total', ['sjc', 'ssr']] = np.NaN
 
     # Create index variable
-    df = _index_create(df, region)
+    df = _index_create(df, geo_level)
 
     return df
 
@@ -271,10 +272,10 @@ def _final_data_transform(df):
         ]]
 
 
-def _create_kese_data(region):
+def _create_kese_data(geo_level):
     """Transform raw KESE data to final format."""
-    return _raw_data_merge(region) \
-            .pipe(_indicators_create, region) \
+    return _raw_data_merge(geo_level) \
+            .pipe(_indicators_create, geo_level) \
             .pipe(_final_data_transform)
 
 
@@ -366,7 +367,7 @@ def kese_data_create_all(raw_data_fetch, raw_data_remove, aws_filepath=None):
 
     pd.concat(
         [
-            _create_kese_data(region) for region in ['us', 'state']
+            _create_kese_data(geo_level) for geo_level in ['us', 'state']
         ]
     ) \
         .pipe(_download_csv_save, aws_filepath) \
