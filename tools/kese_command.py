@@ -19,8 +19,8 @@ def _fetch_data_cps(fetch_data):
 
     Parameters
     ----------
-    region : str
-        Geographical level of data to be fetched. Options: 'us' or 'state'
+    region: {'us', 'state'}
+        Geographical level of the data.
     """
     print('Fetching CPS data')
 
@@ -51,10 +51,9 @@ def _fetch_data_bed(region, fetch_data):
 
     Parameters
     ----------
-    region : str
-        Geographical level of data to be fetched. Options: 'us' or 'state'
-
-    fetch_data : bool
+    region: {'us', 'state'}
+        Geographical level of data to be fetched.
+    fetch_data: bool
         When true, code fetches the raw data from source; otherwise, it uses the
         data in data/raw_data.
     """
@@ -94,10 +93,9 @@ def _fetch_data_pep(region, fetch_data):
 
     Parameters
     ----------
-    region : str
-        Geographical level of data to be fetched. Options: 'us' or 'state'
-
-    fetch_data : bool
+    region: {'us', 'state'}
+        Geographical level of data to be fetched.
+    fetch_data: bool
         When true, code fetches the raw data from source; otherwise, it uses the
         data in data/raw_data.
     """
@@ -123,7 +121,7 @@ def _raw_data_fetch(fetch_data):
 
     Parameters
     ----------
-    fetch_data : bool
+    fetch_data: bool
         When true, code fetches the raw data from source; otherwise, it uses the
         data in data/raw_data.
     """
@@ -144,8 +142,8 @@ def _raw_data_merge(region):
 
     Parameters
     ----------
-    region : str
-        Geographical level of the data. Options: 'us' or 'state'
+    region: {'us', 'state'}
+        Geographical level of the data.
 
     Returns
     -------
@@ -181,11 +179,10 @@ def _index_create(df, region):
 
     Parameters
     ----------
-    df : DataFrame
+    df: DataFrame
         The indicators data
-
-    region : str
-        Geographical level of data. Options: 'us' or 'state'
+    region: {'us', 'state'}
+        Geographical level of the data.
 
     Returns
     -------
@@ -227,11 +224,10 @@ def _indicators_create(df, region):
 
     Parameters
     ----------
-    df : DataFrame
+    df: DataFrame
         Raw merged data
-
-    region : str
-        Geographical level of data. Options: 'us' or 'state'
+    region: {'us', 'state'}
+        Geographical level of the data.
 
     Returns
     -------
@@ -299,10 +295,9 @@ def _download_to_alley_formatter(df, outcome):
 
     Parameters
     ----------
-    df : DataFrame
+    df: DataFrame
         The data to be formatted
-
-    outcome : str
+    outcome: str
         The column name of the outcome whose values become the cells of the 
         dataframe
 
@@ -359,14 +354,12 @@ def kese_data_create_all(raw_data_fetch, raw_data_remove, aws_filepath=None):
 
     Parameters
     ----------
-    raw_data_fetch : bool
+    raw_data_fetch: bool
         When true, code fetches the raw data from source; otherwise, it uses the
         data in data/raw_data.
-
-    raw_data_remove : bool
+    raw_data_remove: bool
         Specifies whether to delete TEMP data at the end.
-
-    aws_filepath : str
+    aws_filepath: str
         If present, the AWS filepath at which to stash the data.
     """
     _raw_data_fetch(raw_data_fetch)
