@@ -28,7 +28,7 @@ def _fetch_data_cps(fetch_data):
     if fetch_data:
         df_us = pd.DataFrame()
         df_state = pd.DataFrame()
-        for year in [y - 1900 if y < 2000 else str(y - 2000).zfill(2) for y in range(1996, 2022)]:
+        for year in range(1996, 2022):
             df_in = pd.read_csv(f'https://people.ucsc.edu/~rfairlie/data/microdata/kieadata{year}.csv')
 
             df_us = df_us.append(h.preprocess_cps(df_in, 'us'))
